@@ -799,6 +799,11 @@ class DeviceSpecificParams(object):
     used to install the image for the device's baseband processor."""
     return self._DoCall("FullOTA_InstallEnd")
 
+  def FullOTA_DisableBootImageInstallation(self):
+    """Called to check if the boot image installation should be skipped
+    (which is useful for devices with a locked bootloader)."""
+    return self._DoCall("FullOTA_DisableBootImageInstallation", [ None ], default=False)
+
   def IncrementalOTA_Assertions(self):
     """Called after emitting the block of assertions at the top of an
     incremental OTA package.  Implementations can add whatever
