@@ -628,6 +628,10 @@ def WriteIncrementalOTAPackage(target_zip, source_zip, output_zip):
       "/tmp/boot.img", "boot.img", OPTIONS.target_tmp, "BOOT")
   updating_boot = (source_boot.data != target_boot.data)
 
+  if updating_boot and device_specific.IncrementalOTA_DisableRecoveryUpdate():
+    print "Update of recovery is disabled by device specific script."
+    updating_boot = False
+
   #source_recovery = common.GetBootableImage(
   #    "/tmp/recovery.img", "recovery.img", OPTIONS.source_tmp, "RECOVERY",
   #    OPTIONS.source_info_dict)
