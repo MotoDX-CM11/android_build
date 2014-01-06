@@ -804,6 +804,12 @@ class DeviceSpecificParams(object):
     (which is useful for devices with a locked bootloader)."""
     return self._DoCall("FullOTA_DisableBootImageInstallation", [ None ], default=False)
 
+  def FullOTA_FormatSystemPartition(self):
+    """Called to check if the system partition should be formatted or
+    if a simple "recursive delete" should be executed. Useful for devices
+    with locked bootloader."""
+    return self._DoCall("FullOTA_FormatSystemPartition", [ None ], default=True)
+
   def IncrementalOTA_Assertions(self):
     """Called after emitting the block of assertions at the top of an
     incremental OTA package.  Implementations can add whatever
