@@ -805,10 +805,12 @@ class DeviceSpecificParams(object):
     return self._DoCall("FullOTA_DisableBootImageInstallation", [ None ], default=False)
 
   def FullOTA_FormatSystemPartition(self):
-    """Called to check if the system partition should be formatted or
-    if a simple "recursive delete" should be executed. Useful for devices
-    with locked bootloader."""
-    return self._DoCall("FullOTA_FormatSystemPartition", [ None ], default=True)
+    """Called to indicate that the /system partition should now be
+    formatted. A custom formatting routine cam be implemented here (in
+    this case FullOTA_FormatSystemPartition should return True which
+    indicates that formatting will be skipped as it was already done
+    by this hook)."""
+    return self._DoCall("FullOTA_FormatSystemPartition")
 
   def IncrementalOTA_Assertions(self):
     """Called after emitting the block of assertions at the top of an

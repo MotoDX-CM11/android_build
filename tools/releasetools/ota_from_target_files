@@ -460,13 +460,10 @@ def WriteFullOTAPackage(input_zip, output_zip):
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
 
-  if device_specific.FullOTA_FormatSystemPartition():
+  if not device_specific.FullOTA_FormatSystemPartition():
     script.FormatPartition("/system")
 
   script.Mount("/system")
-
-  if not device_specific.FullOTA_FormatSystemPartition():
-    script.DeleteRecursive("/system")
 
   #script.UnpackPackageDir("recovery", "/system")
   script.UnpackPackageDir("system", "/system")
