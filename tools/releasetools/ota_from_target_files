@@ -52,6 +52,10 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
   -a  (--aslr_mode)  <on|off>
       Specify whether to turn on ASLR for the package (on by default).
 
+  --worker_threads <int>
+      The number of threads that will be used when generating an
+      incremental OTA.
+
   --backup <boolean>
       Enable or disable the execution of backuptool.sh.
       Disabled by default.
@@ -456,8 +460,11 @@ def WriteFullOTAPackage(input_zip, output_zip):
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
 
-  script.FormatPartition("/system")
+  if not device_specific.FullOTA_FormatSystemPartition():
+    script.FormatPartition("/system")
+
   script.Mount("/system")
+
   #script.UnpackPackageDir("recovery", "/system")
   script.UnpackPackageDir("system", "/system")
 
@@ -473,8 +480,12 @@ def WriteFullOTAPackage(input_zip, output_zip):
   Item.GetMetadata(input_zip)
   Item.Get("system").SetPermissions(script)
 
-  common.CheckSize(boot_img.data, "boot.img", OPTIONS.info_dict)
-  common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
+  if device_specific.FullOTA_DisableBootImageInstallation():
+    print "Boot image installation is disabled due to a device-specific rule."
+  else:
+    common.CheckSize(boot_img.data, "boot.img", OPTIONS.info_dict)
+    common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
+
   script.ShowProgress(0.2, 0)
 
   if OPTIONS.backuptool:
@@ -482,7 +493,9 @@ def WriteFullOTAPackage(input_zip, output_zip):
     script.RunBackup("restore")
 
   script.ShowProgress(0.2, 10)
-  script.WriteRawImage("/boot", "boot.img")
+
+  if not device_specific.FullOTA_DisableBootImageInstallation():
+    script.WriteRawImage("/boot", "boot.img")
 
   script.ShowProgress(0.1, 0)
   device_specific.FullOTA_InstallEnd()
@@ -624,12 +637,17 @@ def WriteIncrementalOTAPackage(target_zip, source_zip, output_zip):
       "/tmp/boot.img", "boot.img", OPTIONS.target_tmp, "BOOT")
   updating_boot = (source_boot.data != target_boot.data)
 
+  if updating_boot and device_specific.IncrementalOTA_DisableRecoveryUpdate():
+    print "Update of recovery is disabled by device specific script."
+    updating_boot = False
+
   #source_recovery = common.GetBootableImage(
   #    "/tmp/recovery.img", "recovery.img", OPTIONS.source_tmp, "RECOVERY",
   #    OPTIONS.source_info_dict)
   #target_recovery = common.GetBootableImage(
   #    "/tmp/recovery.img", "recovery.img", OPTIONS.target_tmp, "RECOVERY")
-  updating_recovery = (source_recovery.data != target_recovery.data)
+  #updating_recovery = (source_recovery.data != target_recovery.data)
+  updating_recovery = False
 
   # Here's how we divide up the progress bar:
   #  0.1 for verifying the start state (PatchCheck calls)

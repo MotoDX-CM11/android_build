@@ -799,6 +799,19 @@ class DeviceSpecificParams(object):
     used to install the image for the device's baseband processor."""
     return self._DoCall("FullOTA_InstallEnd")
 
+  def FullOTA_DisableBootImageInstallation(self):
+    """Called to check if the boot image installation should be skipped
+    (which is useful for devices with a locked bootloader)."""
+    return self._DoCall("FullOTA_DisableBootImageInstallation", [ None ], default=False)
+
+  def FullOTA_FormatSystemPartition(self):
+    """Called to indicate that the /system partition should now be
+    formatted. A custom formatting routine cam be implemented here (in
+    this case FullOTA_FormatSystemPartition should return True which
+    indicates that formatting will be skipped as it was already done
+    by this hook)."""
+    return self._DoCall("FullOTA_FormatSystemPartition")
+
   def IncrementalOTA_Assertions(self):
     """Called after emitting the block of assertions at the top of an
     incremental OTA package.  Implementations can add whatever
@@ -827,6 +840,12 @@ class DeviceSpecificParams(object):
     this is used to install the image for the device's baseband
     processor."""
     return self._DoCall("IncrementalOTA_InstallEnd")
+
+  def IncrementalOTA_DisableRecoveryUpdate(self):
+    """Called to check if the UpdateRecovery step should be skipped,
+    which is useful if the device has a "locked" bootloader (where
+    the recovery cannot be overwritten)."""
+    return self._DoCall("IncrementalOTA_DisableRecoveryUpdate", [ None ], default=False)
 
 class File(object):
   def __init__(self, name, data):
