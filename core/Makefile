@@ -1442,6 +1442,7 @@ endif
 
 ifneq ($(TARGET_UNIFIED_DEVICE),)
     $(INTERNAL_OTA_PACKAGE_TARGET): override_prop := --override_prop=true
+endif
 
 $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	@echo "$(OTA_FROM_TARGET_SCRIPT)" > $(PRODUCT_OUT)/ota_script_path
