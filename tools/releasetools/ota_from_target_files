@@ -476,7 +476,11 @@ def WriteFullOTAPackage(input_zip, output_zip):
   if not device_specific.FullOTA_FormatSystemPartition():
     script.FormatPartition("/system")
 
+  script.Mount("/preinstall")
+  script.AppendExtra('delete_recursive("/preinstall");')
   script.Mount("/system")
+  script.AppendExtra('run_program("/sbin/busybox", "mkdir /system/lib");')
+  script.AppendExtra('mount("ext3", "EMMC", "/dev/block/mmcblk1p23", "/system/lib");')
 
   #script.UnpackPackageDir("recovery", "/system")
   script.UnpackPackageDir("system", "/system")
