@@ -994,6 +994,7 @@ PARTITION_TYPES = { "bml": "BML",
                     "ext4": "EMMC",
                     "emmc": "EMMC",
                     "f2fs": "EMMC",
+                    "auto": "EMMC",
                     "mtd": "MTD",
                     "yaffs2": "MTD",
                     "vfat": "EMMC" }
