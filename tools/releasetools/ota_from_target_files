@@ -477,7 +477,12 @@ def WriteFullOTAPackage(input_zip, output_zip):
     script.FormatPartition("/system")
 
   script.Mount("/system")
-  script.UnpackPackageDir("recovery", "/system")
+
+  if device_specific.FullOTA_DisableRecoveryUpdate():
+    print "Recovery update is disabled due to a device-specific rule."
+  else:
+    script.UnpackPackageDir("recovery", "/system")
+
   script.UnpackPackageDir("system", "/system")
 
   symlinks = CopySystemFiles(input_zip, output_zip)
@@ -485,9 +490,11 @@ def WriteFullOTAPackage(input_zip, output_zip):
 
   boot_img = common.GetBootableImage("boot.img", "boot.img",
                                      OPTIONS.input_tmp, "BOOT")
-  recovery_img = common.GetBootableImage("recovery.img", "recovery.img",
-                                         OPTIONS.input_tmp, "RECOVERY")
-  MakeRecoveryPatch(OPTIONS.input_tmp, output_zip, recovery_img, boot_img)
+
+  if not device_specific.FullOTA_DisableRecoveryUpdate():
+    recovery_img = common.GetBootableImage("recovery.img", "recovery.img",
+                                           OPTIONS.input_tmp, "RECOVERY")
+    MakeRecoveryPatch(OPTIONS.input_tmp, output_zip, recovery_img, boot_img)
 
   Item.GetMetadata(input_zip)
   Item.Get("system").SetPermissions(script)
