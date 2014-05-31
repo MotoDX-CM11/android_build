@@ -12,9 +12,8 @@ define clang-flags-subst
   $(eval $(call do-clang-flags-subst,$(1),$(2)))
 endef
 
-
 CLANG_CONFIG_EXTRA_CFLAGS := \
-  -D__compiler_offsetof=__builtin_offsetof \
+  -Os -Qunused-arguments -Wno-unknown-warning-option -D__compiler_offsetof=__builtin_offsetof \
 
 CLANG_CONFIG_UNKNOWN_CFLAGS := \
   -funswitch-loops
