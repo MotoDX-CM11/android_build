@@ -507,6 +507,7 @@ def CheckSize(data, target, info_dict):
   mount_point = "/" + target
 
   if info_dict["fstab"]:
+    if mount_point == "/userdata_extra": mount_point = "/data"
     if mount_point == "/userdata": mount_point = "/data"
     p = info_dict["fstab"][mount_point]
     fs_type = p.fs_type
@@ -818,12 +819,6 @@ class DeviceSpecificParams(object):
     indicates that formatting will be skipped as it was already done
     by this hook)."""
     return self._DoCall("FullOTA_FormatSystemPartition")
-
-  def FullOTA_DisableRecoveryUpdate(self):
-    """Called to check if the UpdateRecovery step should be skipped,
-    which is useful if the device has a "locked" bootloader (where
-    the recovery cannot be overwritten)."""
-    return self._DoCall("FullOTA_DisableRecoveryUpdate", [ None ], default=False)
 
   def IncrementalOTA_Assertions(self):
     """Called after emitting the block of assertions at the top of an
