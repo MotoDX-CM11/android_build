@@ -820,12 +820,6 @@ class DeviceSpecificParams(object):
     by this hook)."""
     return self._DoCall("FullOTA_FormatSystemPartition")
 
-  def FullOTA_DisableRecoveryUpdate(self):
-    """Called to check if the UpdateRecovery step should be skipped,
-    which is useful if the device has a "locked" bootloader (where
-    the recovery cannot be overwritten)."""
-    return self._DoCall("FullOTA_DisableRecoveryUpdate", [ None ], default=False)
-
   def IncrementalOTA_Assertions(self):
     """Called after emitting the block of assertions at the top of an
     incremental OTA package.  Implementations can add whatever
