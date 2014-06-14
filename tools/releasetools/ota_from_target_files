@@ -77,7 +77,7 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
       Do not generate recovery image. For devices which do not have a truly
       separate recovery partition.
 
-  --require_verbatim <string>
+  --verbatim_files <string>
       A (comma-separated) list of file-paths (which have to start with the
       mount-point name, for example "system" but should not start with a
       leading slash) which will not be "patched". Instead those files will
