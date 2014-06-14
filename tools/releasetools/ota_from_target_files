@@ -77,6 +77,13 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
       Do not generate recovery image. For devices which do not have a truly
       separate recovery partition.
 
+  --verbatim_files <string>
+      A (comma-separated) list of file-paths (which have to start with the
+      mount-point name, for example "system" but should not start with a
+      leading slash) which will not be "patched". Instead those files will
+      always be copied (no matter what the state of the file on the device
+      is).
+
 """
 
 import sys
@@ -1049,6 +1056,8 @@ def main(argv):
       OPTIONS.override_prop = bool(a.lower() == 'true')
     elif o in ("--no_separate_recovery"):
       OPTIONS.no_separate_recovery = bool(a.lower() == 'true')
+    elif o in ("--verbatim_files"):
+      OPTIONS.require_verbatim = set(a.split(","))
     else:
       return False
     return True
@@ -1068,6 +1077,7 @@ def main(argv):
                                               "override_device=",
                                               "override_prop=",
                                               "no_separate_recovery=",
+                                              "verbatim_files=",
                                               ],
                              extra_option_handler=option_handler)
 
