@@ -77,6 +77,13 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
       Do not generate recovery image. For devices which do not have a truly
       separate recovery partition.
 
+  --verbatim_files <string>
+      A (comma-separated) list of file-paths (which have to start with the
+      mount-point name, for example "system" but should not start with a
+      leading slash) which will not be "patched". Instead those files will
+      always be copied (no matter what the state of the file on the device
+      is).
+
 """
 
 import sys
@@ -415,6 +422,10 @@ def MakeRecoveryPatch(input_tmp, output_zip, recovery_img, boot_img):
   recovery_type, recovery_device = common.GetTypeAndDevice("/recovery", OPTIONS.info_dict)
 
   sh = """#!/system/bin/sh
+if [ -f /system/etc/recovery-transform.sh ]; then
+  exec sh /system/etc/recovery-transform.sh %(recovery_size)d %(recovery_sha1)s %(boot_size)d %(boot_sha1)s
+fi
+
 if ! applypatch -c %(recovery_type)s:%(recovery_device)s:%(recovery_size)d:%(recovery_sha1)s; then
   log -t recovery "Installing new recovery image"
   applypatch %(bonus_args)s %(boot_type)s:%(boot_device)s:%(boot_size)d:%(boot_sha1)s %(recovery_type)s:%(recovery_device)s %(recovery_sha1)s %(recovery_size)d %(boot_sha1)s:/system/recovery-from-boot.p
@@ -1055,6 +1066,8 @@ def main(argv):
       OPTIONS.override_prop = bool(a.lower() == 'true')
     elif o in ("--no_separate_recovery"):
       OPTIONS.no_separate_recovery = bool(a.lower() == 'true')
+    elif o in ("--verbatim_files"):
+      OPTIONS.require_verbatim = set(a.split(","))
     else:
       return False
     return True
@@ -1074,6 +1087,7 @@ def main(argv):
                                               "override_device=",
                                               "override_prop=",
                                               "no_separate_recovery=",
+                                              "verbatim_files=",
                                               ],
                              extra_option_handler=option_handler)
 
