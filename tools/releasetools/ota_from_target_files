@@ -525,9 +525,7 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
 
   if OPTIONS.backuptool:
     script.Mount("/system")
-    script.AppendExtra('mount("ext3", "EMMC", "/dev/block/mmcblk1p23", "/system/lib");')
     script.RunBackup("backup")
-    script.Unmount("/system/lib")
     script.Unmount("/system")
 
   script.ShowProgress(0.5, 0)
