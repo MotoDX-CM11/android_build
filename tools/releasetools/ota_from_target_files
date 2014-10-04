@@ -543,11 +543,7 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
   if not device_specific.FullOTA_FormatSystemPartition():
     script.FormatPartition("/system")
 
-  script.Mount("/preinstall")
-  script.AppendExtra('delete_recursive("/preinstall");')
   script.Mount("/system")
-  script.AppendExtra('run_program("/sbin/busybox", "mkdir /system/lib");')
-  script.AppendExtra('mount("ext3", "EMMC", "/dev/block/mmcblk1p23", "/system/lib");')
 
   if not OPTIONS.no_separate_recovery:
     script.UnpackPackageDir("recovery", "/system")
